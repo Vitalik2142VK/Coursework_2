@@ -1,27 +1,28 @@
 package taskList;
 
-import taskList.repeatability.Repeatability;
+import taskList.exeptions.IncorrectArgumentException;
+import taskList.repeatability.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Task {
     private static int idGenerator = 0;
-    private String title, description;
+    private String title, description, repeatString;
     private Type type;
-    private LocalDateTime dateTime;
+    private final LocalDateTime dateTime;
     private int id;
-    private Repeatability repeatability;
+    private final Repeatability repeatability;
 
-    public Task(String title, String description, Type type, Repeatability repeatability) {
+    public Task(String title, String description, Type type, TypeRepeatability typeRep) throws IncorrectArgumentException {
         this.id = ++idGenerator;
         if (idGenerator > 1_999_999)
             idGenerator = 0; // Добавить метод проверяющий повторяемость id
         this.title = title;
         this.description = description;
         this.type = type;
-        this.repeatability = repeatability;
         dateTime = LocalDateTime.now();
+        repeatability = creatRepeatability(typeRep, dateTime.toLocalDate());
     }
 
     //----------Геттеры----------//
@@ -74,10 +75,32 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Id задачи:\t" + id + "\nНаименование:\t" + title + "\nДата создания:\t" + dateTime + "\nОписание задачи:\n\t" + description;
+        return "Индекс задачи:\t" + id + "\nНаименование:\t" + title + "\nДата создания:\t" + dateTime + "\nПовторяемость:\t" + repeatString +
+                "\nОписание задачи:\n\t" + description;
     }
 
     //----------Созданные методы----------//
+
+    private Repeatability creatRepeatability(TypeRepeatability typeRep, LocalDate dateCreation) throws IncorrectArgumentException {
+        switch (typeRep) {
+            case ONETIME:
+                repeatString = "Один раз";
+                return new OneTimeTask(dateCreation);
+            case DAILY:
+                repeatString = "Каждый день";
+                return new DailyTask(dateCreation);
+            case WEEKLY:
+                repeatString = "Каждую неделю";
+                return new WeeklyTask(dateCreation);
+            case MONTHLY:
+                repeatString = "Каждый месяц";
+                return new MonthlyTask(dateCreation);
+            case YEARLY:
+                repeatString = "Каждый год";
+                return new YearlyTask(dateCreation);
+            default: throw new IncorrectArgumentException("Ошибка при выборе повторяемости.");
+        }
+    }
 
     public boolean appearsIn(LocalDate ld) {
         return repeatability.appearsIn(ld);

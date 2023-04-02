@@ -18,7 +18,7 @@ public class TaskService {
 
     public Task remove(int id) {
         if (taskMap.containsKey(id)) {
-            if (taskMap.get(id).getType() == Type.Personal) {
+            if (taskMap.get(id).getType() == Type.PERSONAL) {
                 removedTasks.addFirst(taskMap.get(id));
                 taskMap.remove(id);
                 return removedTasks.getFirst();
@@ -32,12 +32,12 @@ public class TaskService {
     }
 
     public Collection<Task> getAllByDate(LocalDate lD) {
-        LocalDate localDate;
+        LocalDate dataCreation;
         Collection<Task> tasks = new ArrayList<>();
-
-        for (var map : taskMap.values()) {
-            localDate = LocalDate.from(map.getDateTime());
-            if (localDate.equals(lD)) {
+        
+        for (final var map : taskMap.values()) {
+            dataCreation = LocalDate.from(map.getDateTime());
+            if (dataCreation.isEqual(lD) || map.appearsIn(lD)) {
                 tasks.add(map);
             }
         }

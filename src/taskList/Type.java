@@ -1,6 +1,6 @@
 package taskList;
 
 public enum Type {
-    Work,
-    Personal;
+    WORK,
+    PERSONAL;
 }

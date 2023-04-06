@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Task {
+
     private static int idGenerator = 0;
     private String title, description, repeatString;
     private Type type;
@@ -15,9 +16,7 @@ public class Task {
     private final Repeatability repeatability;
 
     public Task(String title, String description, Type type, TypeRepeatability typeRep) throws IncorrectArgumentException {
-        this.id = ++idGenerator;
-        if (idGenerator > 1_999_999)
-            idGenerator = 0; // Добавить метод проверяющий повторяемость id
+        changeId();
         this.title = title;
         this.description = description;
         this.type = type;
@@ -106,4 +105,9 @@ public class Task {
         return repeatability.appearsIn(ld);
     }
 
+    public void changeId() {
+        this.id = ++idGenerator;
+        if (idGenerator > 1_999_999)
+            idGenerator = 0;
+    }
 }

@@ -5,6 +5,7 @@ import taskList.repeatability.*;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -74,7 +75,7 @@ public class Main {
 
     //----------Основные методы----------//
 
-    public static void addTask(TaskService ts) throws IncorrectArgumentException, TaskNotFoundException {
+    public static void addTask(TaskService ts) throws IncorrectArgumentException {
         Scanner in = new Scanner(System.in);
 
         String title, description;
@@ -99,19 +100,19 @@ public class Main {
         System.out.println("Задача добавлена.");
     }
 
-    public static void removeTask(TaskService ts) throws TaskNotFoundException {
+    public static void removeTask(TaskService ts) {
         int id;
         Scanner in = new Scanner(System.in);
 
         System.out.println("Введите индекс задачи, которую хотите удалить:");
         id = in.nextInt();
 
-        Task task = ts.remove(id);
+        final Task task = ts.remove(id);
 
         System.out.println("Задача | '" + task.getTitle() + "' созданная - " + task.getDateTime() + " | удалена.");
     }
 
-    private static void getAllByDate(TaskService ts, LocalDate localDate) throws TaskNotFoundException {
+    private static void getAllByDate(TaskService ts, LocalDate localDate) {
         Collection<Task> taskList = ts.getAllByDate(localDate);
 
         if (taskList.size() == 0) {
@@ -125,10 +126,56 @@ public class Main {
         }
     }
 
-    public static void getAllTasks(TaskService ts) throws TaskNotFoundException {
+    private static void getAllGroupByDate(TaskService ts) {
+        System.out.println("Еще не реализовано!");
+    }
+
+    public static void getAllTasks(TaskService ts) {
         if (ts.getAllTasks().size() == 0)
             throw new TaskNotFoundException("Задач нет.");
         for (final var value : ts.getAllTasks()) {
+            System.out.println("\n----------#####----------\n");
+            System.out.println(value);
+        }
+        System.out.println("\n----------#####----------\n");
+    }
+
+    public static void updateTitle(TaskService ts) {
+        Scanner in = new Scanner(System.in);
+
+        String newTitle;
+        int newId;
+
+        System.out.println("Введите индек задачи:");
+        newId = in.nextInt();
+        in.nextLine();
+        System.out.println("Введите новое название задачи:");
+        newTitle = in.nextLine();
+
+        ts.updateTitle(newId, newTitle);
+        System.out.println("Название задачи изменено.");
+    }
+
+    public static void updateDescription(TaskService ts) {
+        Scanner in = new Scanner(System.in);
+
+        String newDescription;
+        int newId;
+
+        System.out.println("Введите индек задачи:");
+        newId = in.nextInt();
+        in.nextLine();
+        System.out.println("Введите новое название задачи:");
+        newDescription = in.nextLine();
+
+        ts.updateDescription(newId, newDescription);
+        System.out.println("Описание задачи изменено.");
+    }
+
+    private static void getRemovedTasks(TaskService st) {
+        if(st.getRemovedTasks().size() == 0)
+            throw new TaskNotFoundException("Удаленных задач нет.");
+        for (final var value : st.getRemovedTasks()) {
             System.out.println("\n----------#####----------\n");
             System.out.println(value);
         }
@@ -168,8 +215,12 @@ public class Main {
                     "\n1.Добавить задачу;" +
                     "\n2.Удалить задачу по указанному индексу;" +
                     "\n3.Показать список задач на предстоящий день;" +
-                    "\n4.Показать все задачи;" +
-                    "\n5.Выйти из программы.");
+                    "\n4.Показать задачи сгруппированные по дате;" +
+                    "\n5.Изменить заголовок задачи по индексу;" +
+                    "\n6.Изменить описание задачи по индексу;" +
+                    "\n7.Показать удаленные задачи;" +
+                    "\n8.Показать все задачи;" +
+                    "\n9.Выйти из программы.");
             try {
 
                 if (in.hasNextInt()) {
@@ -192,9 +243,21 @@ public class Main {
                         getAllByDate(taskSer, LocalDate.now());
                         break;
                     case 4:
-                        getAllTasks(taskSer);
+                        getAllGroupByDate(taskSer);
                         break;
                     case 5:
+                        updateTitle(taskSer);
+                        break;
+                    case 6:
+                        updateDescription(taskSer);
+                        break;
+                    case 7:
+                        getRemovedTasks(taskSer);
+                        break;
+                    case 8:
+                        getAllTasks(taskSer);
+                        break;
+                    case 9:
                         break;
                     default:
                         System.out.println("\nНе корректно введен номер пункта!");

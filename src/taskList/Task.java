@@ -10,7 +10,7 @@ public class Task {
 
     private static int idGenerator = 0;
     private String title, description, repeatString;
-    private Type type;
+    private final Type type;
     private final LocalDateTime dateTime;
     private int id;
     private final Repeatability repeatability;
@@ -21,7 +21,7 @@ public class Task {
         this.description = description;
         this.type = type;
         dateTime = LocalDateTime.now();
-        repeatability = creatRepeatability(typeRep, dateTime.toLocalDate());
+        repeatability = creatRepeatability(typeRep);
     }
 
     //----------Геттеры----------//
@@ -80,23 +80,23 @@ public class Task {
 
     //----------Созданные методы----------//
 
-    private Repeatability creatRepeatability(TypeRepeatability typeRep, LocalDate dateCreation) throws IncorrectArgumentException {
+    private Repeatability creatRepeatability(TypeRepeatability typeRep) throws IncorrectArgumentException {
         switch (typeRep) {
             case ONETIME:
                 repeatString = "Один раз";
-                return new OneTimeTask(dateCreation);
+                return new OneTimeTask(dateTime.toLocalDate());
             case DAILY:
                 repeatString = "Каждый день";
-                return new DailyTask(dateCreation);
+                return new DailyTask(dateTime.toLocalDate());
             case WEEKLY:
                 repeatString = "Каждую неделю";
-                return new WeeklyTask(dateCreation);
+                return new WeeklyTask(dateTime.toLocalDate());
             case MONTHLY:
                 repeatString = "Каждый месяц";
-                return new MonthlyTask(dateCreation);
+                return new MonthlyTask(dateTime.toLocalDate());
             case YEARLY:
                 repeatString = "Каждый год";
-                return new YearlyTask(dateCreation);
+                return new YearlyTask(dateTime.toLocalDate());
             default: throw new IncorrectArgumentException("Ошибка при выборе повторяемости.");
         }
     }

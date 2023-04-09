@@ -7,14 +7,14 @@ import java.util.*;
 
 public class TaskService {
     private final Map<Integer, Task> taskMap;
-    private final LinkedList<Task> removedTasks;
+    private final List<Task> removedTasks;
 
     public TaskService() {
         this.taskMap = new HashMap<>();
-        this.removedTasks = new LinkedList<>();
+        this.removedTasks = new ArrayList<>();
     }
 
-    public void addTask(Task task) throws TaskNotFoundException {
+    public void addTask(Task task) {
         int i;
         for (i = 0; i < 2_000_000; i++) {
             if (taskMap.containsKey(task.getId())) {
@@ -28,17 +28,10 @@ public class TaskService {
         taskMap.put(task.getId(), task);
     }
 
-    public Task remove(int id) throws TaskNotFoundException {
-        if (taskMap.containsKey(id)) {
-            if (taskMap.get(id).getType() == Type.PERSONAL) {
-                removedTasks.addFirst(taskMap.get(id));
-                taskMap.remove(id);
-                return removedTasks.getFirst();
-            } else {
-                removedTasks.addLast(taskMap.get(id));
-                taskMap.remove(id);
-                return removedTasks.getLast();
-            }
+    public Task remove(int idTask) {
+        if (taskMap.containsKey(idTask)) {
+            removedTasks.add(taskMap.get(idTask));
+            return taskMap.remove(idTask);
         }
         throw new TaskNotFoundException("Задачи с таким индексом не существует.");
     }
@@ -55,6 +48,33 @@ public class TaskService {
             }
         }
         return tasks;
+    }
+
+    public Map<LocalDate, List<Task>> getAllGroupByDate() {
+        Map<LocalDate, List<Task>> dataGroupMap = new HashMap<>();
+        return null;
+    }
+
+    public List<Task> getRemovedTasks() {
+        return removedTasks;
+    }
+
+    public Task updateTitle(int idTask, String newDescription) {
+        if (taskMap.containsKey(idTask)) {
+            Task task = taskMap.get(idTask);
+            task.setTitle(newDescription);
+            return task;
+        }
+        throw new TaskNotFoundException("Задачи с таким индексом не существует.");
+    }
+
+    public Task updateDescription(int idTask, String newDescription) {
+        if (taskMap.containsKey(idTask)) {
+            Task task = taskMap.get(idTask);
+            task.setDescription(newDescription);
+            return task;
+        }
+        throw new TaskNotFoundException("Задачи с таким индексом не существует.");
     }
 
     public Collection<Task> getAllTasks() {

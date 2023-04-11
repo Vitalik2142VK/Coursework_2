@@ -36,14 +36,11 @@ public class TaskService {
         throw new TaskNotFoundException("Задачи с таким индексом не существует.");
     }
 
-    public Collection<Task> getAllByDate(LocalDate lD) {
-        LocalDate dataCreation;
+    public Collection<Task> getAllByDate(LocalDate date) {
         Collection<Task> tasks = new ArrayList<>();
         
         for (final var value : taskMap.values()) {
-            dataCreation = LocalDate.from(value.getDateTime());
-
-            if (dataCreation.isEqual(lD) || value.appearsIn(lD)) {
+            if (value.appearsIn(date)) {
                 tasks.add(value);
             }
         }
@@ -51,8 +48,19 @@ public class TaskService {
     }
 
     public Map<LocalDate, List<Task>> getAllGroupByDate() {
-        Map<LocalDate, List<Task>> dataGroupMap = new HashMap<>();
-        return null;
+        Map<LocalDate, List<Task>> dataGroupMap = new TreeMap<>();
+        List<Task> taskList;
+
+        for (var value : taskMap.values()) {
+            if (dataGroupMap.containsKey(value.getFirstRepetitionDate())) {
+                taskList = dataGroupMap.get(value.getFirstRepetitionDate());
+                taskList.add(value);
+            } else {
+                dataGroupMap.put(value.getFirstRepetitionDate(), new ArrayList<>(List.of(value)));
+            }
+        }
+
+        return dataGroupMap;
     }
 
     public List<Task> getRemovedTasks() {

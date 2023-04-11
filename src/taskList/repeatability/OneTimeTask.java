@@ -2,12 +2,11 @@ package taskList.repeatability;
 
 import java.time.LocalDate;
 
-public class OneTimeTask extends Repeatability {
-
-    public OneTimeTask(LocalDate dateCreation) {}
+public class OneTimeTask implements Repeatability {
 
     @Override
-    public boolean appearsIn(LocalDate localDate) {
-        return false;
+    public boolean appearsIn(LocalDate localDate, LocalDate firstRepetitionDate) {
+        return firstRepetitionDate.isEqual(localDate);
     }
+
 }

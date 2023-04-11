@@ -12,6 +12,7 @@ public class Task {
     private String title, description, repeatString;
     private final Type type;
     private final LocalDateTime dateTime;
+    private LocalDate firstRepetitionDate;
     private int id;
     private final Repeatability repeatability;
 
@@ -46,6 +47,9 @@ public class Task {
         return dateTime;
     }
 
+    public LocalDate getFirstRepetitionDate() {
+        return firstRepetitionDate;
+    }
     //----------Сеттеры----------//
 
     public void setTitle(String title) {
@@ -63,10 +67,10 @@ public class Task {
         return title.hashCode() + description.hashCode();
     }
 
-    public boolean equals(Task object) { // добавить для сравнения repeatability
+    public boolean equals(Task object) {
         if (this.hashCode() == object.hashCode()) {
             return title.equals(object.getTitle()) && description.equals(object.getDescription())
-                    && this.type == object.getType();
+                    && this.type == object.getType() && this.repeatability.getClass() == object.repeatability.getClass();
         }
         else
             return false;
@@ -84,25 +88,30 @@ public class Task {
         switch (typeRep) {
             case ONETIME:
                 repeatString = "Один раз";
-                return new OneTimeTask(dateTime.toLocalDate());
+                firstRepetitionDate = dateTime.toLocalDate();
+                return new OneTimeTask();
             case DAILY:
                 repeatString = "Каждый день";
-                return new DailyTask(dateTime.toLocalDate());
+                firstRepetitionDate = dateTime.toLocalDate().plusDays(1);
+                return new DailyTask();
             case WEEKLY:
                 repeatString = "Каждую неделю";
-                return new WeeklyTask(dateTime.toLocalDate());
+                firstRepetitionDate = dateTime.toLocalDate().plusWeeks(1);
+                return new WeeklyTask();
             case MONTHLY:
                 repeatString = "Каждый месяц";
-                return new MonthlyTask(dateTime.toLocalDate());
+                firstRepetitionDate = dateTime.toLocalDate().plusMonths(1);
+                return new MonthlyTask();
             case YEARLY:
                 repeatString = "Каждый год";
-                return new YearlyTask(dateTime.toLocalDate());
+                firstRepetitionDate = dateTime.toLocalDate().plusYears(1);
+                return new YearlyTask();
             default: throw new IncorrectArgumentException("Ошибка при выборе повторяемости.");
         }
     }
 
-    public boolean appearsIn(LocalDate ld) {
-        return repeatability.appearsIn(ld);
+    public boolean appearsIn(LocalDate date) {
+        return repeatability.appearsIn(date, firstRepetitionDate);
     }
 
     public void changeId() {

@@ -2,8 +2,7 @@ package taskList.repeatability;
 
 import java.time.LocalDate;
 
-public abstract class Repeatability {
-    protected LocalDate repeatDate;
+public interface Repeatability {
 
-    public abstract boolean appearsIn(LocalDate localDate);
+    boolean appearsIn(LocalDate localDate, LocalDate firstRepetitionDate);
 }

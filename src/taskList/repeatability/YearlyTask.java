@@ -2,17 +2,14 @@ package taskList.repeatability;
 
 import java.time.LocalDate;
 
-public class YearlyTask extends Repeatability {
-
-    public YearlyTask(LocalDate dateCreation) {
-        repeatDate = dateCreation.plusYears(1);
-    }
+public class YearlyTask implements Repeatability {
 
     @Override
-    public boolean appearsIn(LocalDate localDate) {
-        while (repeatDate.isBefore(localDate)) {
-            repeatDate = repeatDate.plusYears(1);
+    public boolean appearsIn(LocalDate localDate, LocalDate firstRepetitionDate) {
+        while (firstRepetitionDate.isBefore(localDate)) {
+            firstRepetitionDate = firstRepetitionDate.plusYears(1);
         }
-        return repeatDate.isEqual(localDate);
+        return firstRepetitionDate.isEqual(localDate);
     }
+
 }

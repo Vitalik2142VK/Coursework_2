@@ -4,6 +4,7 @@ import taskList.exeptions.TaskNotFoundException;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TaskService {
     private final Map<Integer, Task> taskMap;
@@ -37,24 +38,17 @@ public class TaskService {
     }
 
     public Collection<Task> getAllByDate(LocalDate date) {
-        Collection<Task> tasks = new ArrayList<>();
-        
-        for (final var value : taskMap.values()) {
-            if (value.appearsIn(date)) {
-                tasks.add(value);
-            }
-        }
-        return tasks;
+        return taskMap.values().stream()
+                .filter(t -> t.appearsIn(date))
+                .collect(Collectors.toList());
     }
 
     public Map<LocalDate, List<Task>> getAllGroupByDate() {
         Map<LocalDate, List<Task>> dataGroupMap = new TreeMap<>();
-        List<Task> taskList;
 
         for (var value : taskMap.values()) {
             if (dataGroupMap.containsKey(value.getFirstRepetitionDate())) {
-                taskList = dataGroupMap.get(value.getFirstRepetitionDate());
-                taskList.add(value);
+                dataGroupMap.get(value.getFirstRepetitionDate()).add(value);
             } else {
                 dataGroupMap.put(value.getFirstRepetitionDate(), new ArrayList<>(List.of(value)));
             }
@@ -83,9 +77,5 @@ public class TaskService {
             return task;
         }
         throw new TaskNotFoundException("Задачи с таким индексом не существует.");
-    }
-
-    public Collection<Task> getAllTasks() {
-        return taskMap.values();
     }
 }

@@ -21,18 +21,18 @@ public class Main {
                     }
             }
         } while (exit != 0);
-        throw new IncorrectArgumentException("Не корректно выбрана частота повторяемости задачи.");
+        throw new IncorrectArgumentException("Тип задачи");
     }
 
-    public static TypeRepeatability choseRepeatability(Scanner inInt) throws IncorrectArgumentException {
+    public static Task choseRepeatability(Scanner inInt, String title, String description, Type type) throws IncorrectArgumentException {
         int exit = 4;
         do {
             switch (inInt.nextInt()) {
-                case 1: return TypeRepeatability.ONETIME;
-                case 2: return TypeRepeatability.DAILY;
-                case 3: return TypeRepeatability.WEEKLY;
-                case 4: return TypeRepeatability.MONTHLY;
-                case 5: return TypeRepeatability.YEARLY;
+                case 1: return new OneTimeTask(title, description, type);
+                case 2: return new DailyTask(title, description, type);
+                case 3: return new WeeklyTask(title, description, type);
+                case 4: return new MonthlyTask(title, description, type);
+                case 5: return new YearlyTask(title, description, type);
                 default:
                     exit--;
                     if (exit != 0) {
@@ -77,22 +77,20 @@ public class Main {
 
         String title, description;
         Type type;
-        TypeRepeatability typeRepeatability;
 
         System.out.println("Введите название задачи:");
         title = in.nextLine();
+        if (title.equals("")) throw new IncorrectArgumentException("Пустое наименование задачи");
 
         System.out.println("Введите описание задачи:");
         description = in.nextLine();
+        if (description.equals("")) throw new IncorrectArgumentException("Пустое описание задачи");
 
         System.out.println("Введите номер типа задачи:\n1.Рабочая\n2.Персональная");
         type = chooseTask(in);
 
         System.out.println("Введите номер частоты повторения задачи:\n1.Однократная\n2.Ежедневная\n3.Еженедельная\n4.Ежемесячная\n5.Ежегодная");
-        typeRepeatability = choseRepeatability(in);
-
-        Task task = new Task(title, description, type, typeRepeatability);
-        ts.addTask(task);
+        ts.addTask(choseRepeatability(in, title, description, type));
 
         System.out.println("Задача добавлена.");
     }
@@ -131,7 +129,7 @@ public class Main {
         }
 
         for (final var list : dataGroupMap.values()) {
-            System.out.println("\nГруппа задач по дате повтора: " + list.get(0).getFirstRepetitionDate() + "\n-----#####-----");
+            System.out.println("\nГруппа задач по дате повтора: " + list.get(0).getDateReplay() + "\n-----#####-----");
             for (final var value : list) {
                 System.out.println(value);
                 System.out.println("-----#####-----");
@@ -183,12 +181,12 @@ public class Main {
 
     public static void fillTask(TaskService ts) {
         try {
-            ts.addTask(new Task("Отремонтировать ноутбук", "Отнести в ремонт ноутбук.", Type.PERSONAL, TypeRepeatability.ONETIME));
-            ts.addTask(new Task("Проверить почту", "Проверить почту на наличие писем и текщих задачь.", Type.WORK, TypeRepeatability.DAILY));
-            ts.addTask(new Task("Сходить в магазин", "Вечером сходить в магазин, купить продукты из списка.", Type.PERSONAL, TypeRepeatability.DAILY));
-            ts.addTask(new Task("Заполнить недельный отсчет", "Заполнить недельный отсчет, по выданному имуществу.", Type.WORK, TypeRepeatability.WEEKLY));
-            ts.addTask(new Task("Провести инвентаризацию", "Провести ежемесячную инвентаризацию.", Type.WORK, TypeRepeatability.MONTHLY));
-            ts.addTask(new Task("Поздравить с ДР", "Поздавить с днем рождения.", Type.PERSONAL, TypeRepeatability.YEARLY));
+            ts.addTask(new OneTimeTask("Отремонтировать ноутбук", "Отнести в ремонт ноутбук.", Type.PERSONAL));
+            ts.addTask(new DailyTask("Проверить почту", "Проверить почту на наличие писем и текщих задачь.", Type.WORK));
+            ts.addTask(new DailyTask("Сходить в магазин", "Вечером сходить в магазин, купить продукты из списка.", Type.PERSONAL));
+            ts.addTask(new WeeklyTask("Заполнить недельный отсчет", "Заполнить недельный отсчет, по выданному имуществу.", Type.WORK));
+            ts.addTask(new MonthlyTask("Провести инвентаризацию", "Провести ежемесячную инвентаризацию.", Type.WORK));
+            ts.addTask(new YearlyTask("Поздравить с ДР", "Поздавить с днем рождения.", Type.PERSONAL));
         } catch (IncorrectArgumentException | TaskNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -260,6 +258,8 @@ public class Main {
                 }
             } catch (InputMismatchException ex) {
                 System.out.println("Не корректно выбран пункт. Необходимо вводить целые числа.");
+            } catch (IncorrectArgumentException ex) {
+                System.out.println(ex);
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }

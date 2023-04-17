@@ -25,7 +25,7 @@ public class TaskService {
             }
         }
         if (i >= 2_000_000)
-            throw new TaskNotFoundException("Нет совбодного места для записи новой задачи, удалите старые.");
+            throw new TaskNotFoundException("Нет свободного места для записи новой задачи, удалите старые.");
         taskMap.put(task.getId(), task);
     }
 
@@ -47,10 +47,10 @@ public class TaskService {
         Map<LocalDate, List<Task>> dataGroupMap = new TreeMap<>();
 
         for (var value : taskMap.values()) {
-            if (dataGroupMap.containsKey(value.getFirstRepetitionDate())) {
-                dataGroupMap.get(value.getFirstRepetitionDate()).add(value);
+            if (dataGroupMap.containsKey(value.getDateReplay())) {
+                dataGroupMap.get(value.getDateReplay()).add(value);
             } else {
-                dataGroupMap.put(value.getFirstRepetitionDate(), new ArrayList<>(List.of(value)));
+                dataGroupMap.put(value.getDateReplay(), new ArrayList<>(List.of(value)));
             }
         }
 
